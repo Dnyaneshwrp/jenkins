@@ -1,0 +1,14 @@
+node ('build_java_11') {
+    stage('source') {
+        git 'https://github.com/jenkins-docs/simple-java-maven-app.git'
+        }
+    stage('Build') {
+        sh '/usr/local/apache-maven-3.8.5/bin/mvn clean package'
+        } 
+    stage('archive') {
+        archiveArtifacts artifacts: 'target/*.jar', followSymlinks: false
+        } 
+    stage('test report') {
+       junit **/test-*.xml'
+        } 
+}

@@ -1,0 +1,35 @@
+pipeline {
+    agent {label 'build_java_11'}
+    triggers {
+        pollSCM('H/2 * * * *')
+    }
+    stages {
+        stage ('scm') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Azure-Samples/js-e2e-express-server'
+            }
+        }
+        stage('Artifactory-Configuration') {
+            steps {
+                rtMavenDeployer (
+                    id: 'spc-deployer',
+                    serverId: 'JFORG-OSS',
+                    releaseRepo: 'libs-release-local',
+                    snapshotRepo: 'libs-snapshot-local',
+
+                )
+            }
+        }
+        stage ('build') {
+            steps {
+                sh 'npm install'
+                sh 'npm run build'
+            }
+        }
+        stage ('reporting') {
+            steps {
+                archiveArtifacts artifacts: '**/*.jar'
+            }
+        }
+    }
+}

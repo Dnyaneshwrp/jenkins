@@ -1,0 +1,15 @@
+pipeline {
+    agent {label 'build_java_11'}
+    stages {
+        stage('scm') {
+            steps {
+                git 'https://github.com/jenkins-docs/simple-java-maven-app.git'
+            }
+        }
+        stage('build') {
+            steps {
+                sh '/usr/local/apache-maven-3.8.5/bin/mvn clean package'
+            }
+        } 
+    }    
+} 

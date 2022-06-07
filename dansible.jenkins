@@ -1,0 +1,10 @@
+pipeline {
+    agent {label 'ansible_master'}
+    stages {
+        stage('paybook_run') {
+            steps {
+                sh ansible-playbook -i /home/ansible/openmrs/hosts /home/ansible/openmrs/tomcat9.yml
+            }
+        }
+    }
+}

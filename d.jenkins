@@ -1,0 +1,27 @@
+ pipeline {
+    agent { label 'build_java_11'}
+    parameters {
+        choice(name: 'select_branch', choices: ['main','scipted', 'declarative'], description: 'select branch')
+    }
+    triggers {
+        pollSCM('H/2 * * * *')
+    }
+    stages {
+        stage('scm') {
+            steps {
+                git url: 'https://github.com/Dnyaneshwrp/spring-petclinic.git', branch: "${params.select_branch}"
+            }
+        }
+        stage('build') {
+            steps {
+                sh '/usr/local/apache-maven-3.8.5/bin/mvn clean package'
+            }
+        }
+    }
+    post {
+        always {
+        junit 'target/surefire-reports/*.xml'
+        archiveArtifacts artifacts: 'target/*.jar'
+        }
+    }
+}
